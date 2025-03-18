@@ -42,7 +42,8 @@ def gen_progress_graph(data: np.array, exercise: str):
             else:
                 rel_data_tots[date] = [weight * reps, reps, weight]
 
-    plot_results(rel_data_tots, exercise, 'avg')
+    for mode in {'avg', 'max', 'total'}:
+        plot_results(rel_data_tots, exercise, mode)
 
 
 def plot_results(rel_data_tots, exercise: str, mode: str):
@@ -72,6 +73,6 @@ def plot_results(rel_data_tots, exercise: str, mode: str):
 
 
 if __name__ == "__main__":
-    my_data = open_csv("C:/Users/Harsh Jaluka/OneDrive/Desktop/Projects/gymbook_graphs/GymBook-Logs-2024-10-04.csv")
+    my_data = open_csv("GymBook-Logs-2025-03-12.csv")
 
-    gen_progress_graph(my_data, 'Seated Leg Curls')
+    gen_progress_graph(my_data, 'Dumbbell Bulgarian Split Squats')
