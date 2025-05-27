@@ -82,6 +82,9 @@ if __name__ == "__main__":
                     'Assisted Pull-Ups',
                     'Dumbbell Bench Presses',
                     'Dumbbell Bulgarian Split Squats',
+                    'Incline Machine Bench Presses',
+                    'Machine Flys',
+                    'One-Arm Lat Pull-Downs',
                     'Seated Leg Curls',
                     'Single-Arm Overhead Triceps Extension',
                     'Wide-Grip Lat Pull-Downs'}
