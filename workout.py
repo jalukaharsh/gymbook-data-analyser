@@ -69,7 +69,7 @@ def plot_results(rel_data_tots: dict, exercise: str):
     axs[1].set(xlabel='Date', ylabel='Weight (kg)')
     axs[1].legend(loc='upper left')
 
-    plt.savefig(exercise)
+    plt.savefig("exercises/" + exercise)
     plt.close()
 
 
