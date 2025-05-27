@@ -52,17 +52,10 @@ def plot_results(rel_data_tots: dict, exercise: str, mode: str):
     plottable_data_x = rel_data_tots.keys()
     plottable_data_y = np.array(list(rel_data_tots.values()))
 
-    try:
-        weight_tots = plottable_data_y[:, 0]
-        rep_tots = plottable_data_y[:, 1]
-        weight_maxes = plottable_data_y[:, 2]
-    except IndexError:
-        print(exercise)
-        print(rel_data_tots)
-        print(plottable_data_y)
-        exit()
+    weight_tots = plottable_data_y[:, 0]
+    rep_tots = plottable_data_y[:, 1]
+    weight_maxes = plottable_data_y[:, 2]
 
-    # figure = plt.figure(figsize=(12,8))
     figure, ax = plt.subplots(figsize=(12, 8))
 
     if mode == 'avg':
