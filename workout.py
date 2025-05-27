@@ -42,13 +42,10 @@ def gen_progress_graph(data: np.array, exercises: set):
                 else:
                     rel_data_tots[date] = [weight * reps, reps, weight]
 
-        for mode in {'avg', 'max', 'total'}:
-            plot_results(rel_data_tots, exercise, mode)
+        plot_results(rel_data_tots, exercise)
 
 
-def plot_results(rel_data_tots: dict, exercise: str, mode: str):
-    assert mode in {'avg', 'max', 'total'}
-
+def plot_results(rel_data_tots: dict, exercise: str):
     plottable_data_x = rel_data_tots.keys()
     plottable_data_y = np.array(list(rel_data_tots.values()))
 
@@ -56,22 +53,23 @@ def plot_results(rel_data_tots: dict, exercise: str, mode: str):
     rep_tots = plottable_data_y[:, 1]
     weight_maxes = plottable_data_y[:, 2]
 
-    figure, ax = plt.subplots(figsize=(12, 8))
+    figure, axs = plt.subplots(2, figsize=(12, 8))
+    figure.suptitle(exercise)
 
-    if mode == 'avg':
-        plottable_data_y = weight_tots / rep_tots
-        plt.ylabel('Average weight per rep (kg)')
-    elif mode == 'total':
-        plottable_data_y = weight_tots
-        plt.ylabel('Total weight lifted (kg)')
-    elif mode == 'max':
-        plottable_data_y = weight_maxes
-        plt.ylabel('Max weight lifted (kg)')
+    plottable_data_y_avg = weight_tots / rep_tots
+    plottable_data_y_total = weight_tots
+    plottable_data_y_max = weight_maxes
 
-    ax.plot(plottable_data_x, plottable_data_y, marker='o')
-    plt.title(exercise)
-    plt.xlabel('Date')
-    plt.savefig(exercise + '_' + mode)
+    axs[0].plot(plottable_data_x, plottable_data_y_max, marker='o', label='Max Weight Per Rep')
+    axs[0].plot(plottable_data_x, plottable_data_y_avg, marker='o', label='Average Weight Per Rep')
+    axs[0].set(ylabel='Weight (kg)')
+    axs[0].legend(loc='upper left')
+
+    axs[1].plot(plottable_data_x, plottable_data_y_total, marker='o', label='Total Weight')
+    axs[1].set(xlabel='Date', ylabel='Weight (kg)')
+    axs[1].legend(loc='upper left')
+
+    plt.savefig(exercise)
     plt.close()
 
 
