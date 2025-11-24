@@ -3,6 +3,7 @@ from datetime import datetime
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 matplotlib.use('TkAgg')
 
@@ -24,8 +25,8 @@ def gen_progress_graph(data: np.array, exercises: set):
         for log in data:
             exercise_name = log[3]
             if exercise == exercise_name:
-                date_lst = str(log[0]).split('/')
-                date = datetime(int(date_lst[2]), int(date_lst[1]), int(date_lst[0]))
+                date_lst = str(log[0]).split('-')
+                date = datetime(int(date_lst[0]), int(date_lst[1]), int(date_lst[2]))
                 weight = log[-3].split('\u202f')
                 reps = int(log[-4].split('\xa0')[0])
 
@@ -72,9 +73,30 @@ def plot_results(rel_data_tots: dict, exercise: str):
     plt.savefig("exercises/" + exercise)
     plt.close()
 
+def find_latest_csv() -> str:
+    data_dir = Path("data")
+    csv_files = list(data_dir.glob("GymBook-Logs-*.csv"))
+    
+    if not csv_files:
+        raise FileNotFoundError("No CSV files found in data directory")
+    
+    latest_file = None
+    latest_date = None
+    
+    for csv_file in csv_files:
+        # Extract date from filename: GymBook-Logs-2025-05-25.csv
+        date_str = csv_file.stem.replace("GymBook-Logs-", "")
+        file_date = datetime.strptime(date_str, "%Y-%m-%d")
+        
+        if latest_date is None or file_date > latest_date:
+            latest_date = file_date
+            latest_file = csv_file
+    
+    return str(latest_file)
+
 
 if __name__ == "__main__":
-    my_data = open_csv("GymBook-Logs-2025-05-25.csv")
+    my_data = open_csv(find_latest_csv())
 
     my_exercises = {'Alternating Dumbbell Curls',
                     'Arnold Presses',
