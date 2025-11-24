@@ -23,6 +23,9 @@ def gen_progress_graph(data: np.array, exercises: set):
         rel_data_tots = {}
 
         for log in data:
+            if log[-1] == "Yes": 
+                print(log)
+                continue
             exercise_name = log[3]
             if exercise == exercise_name:
                 date_lst = str(log[0]).split('-')
