@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
+import re
 
 matplotlib.use('TkAgg')
 
@@ -19,24 +20,34 @@ def open_csv(address: str):
 
 
 def gen_progress_graph(data: np.array, exercises: set):
+    exercise_count = {key: 0 for key in exercises}
     for exercise in exercises:
         rel_data_tots = {}
 
         for log in data:
             if log[-1] == "Yes": 
-                print(log)
                 continue
             exercise_name = log[3]
             if exercise == exercise_name:
+                exercise_count[exercise_name] += 1
                 date_lst = str(log[0]).split('-')
                 date = datetime(int(date_lst[0]), int(date_lst[1]), int(date_lst[2]))
-                weight = log[-3].split('\u202f')
+                weight = re.split(r'[\xa0\u202f]', log[-3])
                 reps = int(log[-4].split('\xa0')[0])
 
-                if weight[1] == 'lb':
-                    weight = float(weight[0]) * 0.4536  # convert to kg
-                else:
-                    weight = float(weight[0])
+                if len(weight) == 2: 
+                    if weight[1] == 'lb':
+                        weight = float(weight[0]) * 0.4536  # convert to kg
+                    else:
+                        weight = float(weight[0])
+                        # if weight[1] != 'kg': 
+                        #     print(weight)
+                else: 
+                    print(log)
+                    print(type(weight)) 
+                    print(weight)
+                    weight = reps
+                    reps = 1
 
                 if date in rel_data_tots:
                     rel_data_tots[date][0] += weight * reps
@@ -46,10 +57,13 @@ def gen_progress_graph(data: np.array, exercises: set):
                 else:
                     rel_data_tots[date] = [weight * reps, reps, weight]
 
-        plot_results(rel_data_tots, exercise)
+        str_count = str(exercise_count[exercise]).zfill(3) 
+        try: 
+            plot_results(rel_data_tots, exercise, str_count)
+        except: 
+            print(exercise)
 
-
-def plot_results(rel_data_tots: dict, exercise: str):
+def plot_results(rel_data_tots: dict, exercise: str, count: str):
     plottable_data_x = rel_data_tots.keys()
     plottable_data_y = np.array(list(rel_data_tots.values()))
 
@@ -73,7 +87,7 @@ def plot_results(rel_data_tots: dict, exercise: str):
     axs[1].set(xlabel='Date', ylabel='Weight (kg)')
     axs[1].legend(loc='upper left')
 
-    plt.savefig("exercises/" + exercise)
+    plt.savefig("exercises/" + count + ' ' + exercise)
     plt.close()
 
 def find_latest_csv() -> str:
@@ -97,21 +111,17 @@ def find_latest_csv() -> str:
     
     return str(latest_file)
 
+def extract_exercises(data: np.array) -> set(): 
+    all_exercises = set()
+    for log in data:
+        all_exercises.add(log[3])
+
+    return all_exercises
+
 
 if __name__ == "__main__":
     my_data = open_csv(find_latest_csv())
 
-    my_exercises = {'Alternating Dumbbell Curls',
-                    'Arnold Presses',
-                    'Assisted Chin Dips',
-                    'Assisted Pull-Ups',
-                    'Dumbbell Bench Presses',
-                    'Dumbbell Bulgarian Split Squats',
-                    'Incline Machine Bench Presses',
-                    'Machine Flys',
-                    'One-Arm Lat Pull-Downs',
-                    'Seated Leg Curls',
-                    'Single-Arm Overhead Triceps Extension',
-                    'Wide-Grip Lat Pull-Downs'}
+    my_exercises = extract_exercises(my_data)
 
     gen_progress_graph(my_data, my_exercises)
